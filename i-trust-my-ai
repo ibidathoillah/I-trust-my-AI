@@ -1,0 +1,109 @@
+#!/bin/sh
+# i-trust-my-ai - just press 1 (cleanly with backspace/delete) every 8s by default
+# Plain run (no args) toggles start/stop
+
+PIDFILE="/tmp/i-trust-my-ai.pid"
+INTERVAL_MS=8000
+DELAY_SEC=0
+COUNT=0
+DRY_RUN=0
+DAEMON=0
+
+ORIGINAL_ARGS="$*"
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --count)
+            shift; COUNT=$1 ;;
+        --interval-ms)
+            shift; INTERVAL_MS=$1 ;;
+        --delay-sec)
+            shift; DELAY_SEC=$1 ;;
+        --dry-run)
+            DRY_RUN=1 ;;
+        --daemon)
+            DAEMON=1 ;;
+        --help|-h)
+            echo "i-trust-my-ai - just presses 1 + backspace (clean, no spam)"
+            echo "  ./i-trust-my-ai                 # toggle (infinite, 8s interval)"
+            echo "  --count N        # times (0=forever)"
+            echo "  --interval-ms MS # default 8000"
+            echo "  --delay-sec S    # startup delay, default 0"
+            echo "  --dry-run"
+            exit 0 ;;
+        *)
+            echo "bad arg: $1" >&2; exit 1 ;;
+    esac
+    shift
+done
+
+# Toggle mode if no args
+if [ -z "$ORIGINAL_ARGS" ]; then
+    # was there any before we act?
+    was_running=false
+    if pgrep -f 'i-trust-my-ai --daemon' >/dev/null 2>&1 ; then
+        was_running=true
+    fi
+
+    # always clean (enforces only 1; stop "all" but only 1 exists)
+    pkill -f 'i-trust-my-ai --daemon' 2>/dev/null || true
+    sleep 0.5
+    pkill -9 -f 'i-trust-my-ai --daemon' 2>/dev/null || true
+    rm -f "$PIDFILE"
+
+    if $was_running; then
+        echo "Stopped" >&2
+        exit 0
+    fi
+
+    # none was running -> start the (only) one
+    nohup "$0" --daemon >/dev/null 2>&1 &
+    echo "Started" >&2
+    exit 0
+fi
+
+# Daemon or foreground
+if [ "$DAEMON" = 1 ]; then
+    echo $$ > "$PIDFILE"
+    trap 'rm -f "$PIDFILE"' EXIT INT TERM
+fi
+
+if [ "$DELAY_SEC" -gt 0 ]; then
+    echo "starting in ${DELAY_SEC}s (focus target app)..." >&2
+    sleep "$DELAY_SEC"
+fi
+
+N=0
+if [ "$DAEMON" = 0 ]; then
+    trap 'exit 0' INT
+fi
+
+while true; do
+    if [ "$COUNT" -gt 0 ] && [ "$N" -ge "$COUNT" ]; then break; fi
+
+    if [ "$DRY_RUN" = 0 ]; then
+        # clean press: '1' then backspace/delete (avoids text spam)
+        osascript -e '
+tell application "System Events"
+  keystroke "1"
+  delay 0.02
+  key code 51
+end tell' >/dev/null 2>&1 || true
+    fi
+
+    N=$((N+1))
+    if [ "$COUNT" -gt 0 ]; then
+        echo "Pressed 1: $N"
+    fi
+
+    SLEEP=$(awk "BEGIN { printf \"%.3f\", $INTERVAL_MS / 1000 }")
+    sleep "$SLEEP"
+done
+
+if [ "$COUNT" -gt 0 ]; then
+    echo "done ($N presses)" >&2
+fi
+
+if [ "$DAEMON" = 1 ]; then
+    rm -f "$PIDFILE"
+fi
