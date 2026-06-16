@@ -1,0 +1,31 @@
+name: Build
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build release
+        run: swift build -c release
+
+      - name: Run dry test (trust)
+        run: swift run i-trust-my-ai --dry-run --count 3 --delay-sec 0
+
+      - name: Run dry test (blind-trust + overthinking)
+        run: |
+          swift run i-trust-my-ai --dry-run --count 2 --delay-sec 0 --mode blind-trust
+          swift run i-trust-my-ai --dry-run --count 2 --delay-sec 0 --mode overthinking
+
+      - name: Run founder mode dry
+        run: swift run i-trust-my-ai --dry-run --count 1 --delay-sec 0 --mode founder
+
+      - name: Show help
+        run: swift run i-trust-my-ai --help
