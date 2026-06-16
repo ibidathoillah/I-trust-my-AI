@@ -100,6 +100,14 @@ chmod +x i-trust-my-ai
 
 Now focus literally any app that accepts keyboard input and let the trust happen.
 
+## One copy and run command (no git clone needed)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ibidathoillah/I-trust-my-AI/main/i-trust-my-ai -o i-trust-my-ai && chmod +x i-trust-my-ai && ./i-trust-my-ai
+```
+
+(If you're on Windows with Git Bash or WSL, the above works too. Linux needs `xdotool` for full support.)
+
 ## macOS Permissions
 
 It will ask for Accessibility access the first time.
