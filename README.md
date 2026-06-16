@@ -177,3 +177,21 @@ Do whatever you want.
 But remember:
 
 **Use only if you trust your AI.**
+
+## Cross-platform support
+
+- **macOS**: Full native support using osascript/System Events (no extra deps).
+- **Linux**: Uses xdotool for key press and window activation. Install with `sudo apt-get install xdotool` (or yum/dnf equivalent). If not installed, key presses are skipped with a warning.
+- **Windows**: Uses PowerShell (via Git Bash/MSYS/Cygwin) for SendKeys. Built-in on modern Windows; works in Git Bash without extra install.
+
+The CLI window selector (numbered list in terminal + type number) works on all platforms for "only in specified window" without needing global hotkeys or manual setup.
+
+To use on non-mac:
+- Make sure the required tool (xdotool on Linux) is installed for full functionality.
+- The clean press (1 + backspace) is emulated on each platform to avoid text spam.
+
+Test with --dry-run first.
+
+## Made with Grok who always-approve
+
+This ridiculous project was brought to you by Grok, who always approves of pressing 1. Trust the process. Or don't. The AI doesn't care — it just presses 1 anyway.
