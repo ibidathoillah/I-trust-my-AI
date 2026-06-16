@@ -103,10 +103,12 @@ Now focus literally any app that accepts keyboard input and let the trust happen
 ## One copy and run command (no git clone needed)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ibidathoillah/I-trust-my-AI/main/i-trust-my-ai -o i-trust-my-ai && chmod +x i-trust-my-ai && ./i-trust-my-ai
+mkdir -p ~/bin && curl -fsSL https://raw.githubusercontent.com/ibidathoillah/I-trust-my-AI/main/i-trust-my-ai -o ~/bin/i-trust-my-ai && chmod +x ~/bin/i-trust-my-ai && ~/bin/i-trust-my-ai
 ```
 
 (If you're on Windows with Git Bash or WSL, the above works too. Linux needs `xdotool` for full support.)
+
+**Tip:** Add `~/bin` to your PATH if not already (e.g. `echo 'export PATH="$HOME/bin:$PATH"' >> ~/.zshrc && source ~/.zshrc`). This way you can just run `i-trust-my-ai` from anywhere.
 
 ## macOS Permissions
 
