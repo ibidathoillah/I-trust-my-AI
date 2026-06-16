@@ -165,6 +165,9 @@ If the app accepts keyboard input and is focused, yes. If it doesn't, that's bet
 **How do I stop it?**  
 Run it again. It toggles. Beautifully simple.
 
+**Will the AI bother me with questions while I'm sleeping?**  
+No. This AI doesn't ask. It doesn't overthink. It doesn't even have a bedtime story. It just presses 1. Every 8 seconds. All night long. While you're dreaming about finally getting some rest. (Or about pressing 2 — but it won't. Because it only presses 1. And immediately deletes it. So your dreams stay clean too.) Trust the AI. Your keyboard will thank you in the morning.
+
 ## Roadmap
 
 - [x] Press 1
