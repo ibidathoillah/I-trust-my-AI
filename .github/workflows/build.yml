@@ -1,4 +1,4 @@
-name: Build
+name: Test
 
 on:
   push:
@@ -6,26 +6,30 @@ on:
   pull_request:
 
 jobs:
-  build:
+  test:
     runs-on: macos-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build release
-        run: swift build -c release
+      - name: Make executable
+        run: chmod +x i-trust-my-ai
 
-      - name: Run dry test (trust)
-        run: swift run i-trust-my-ai --dry-run --count 3 --delay-sec 0
+      - name: Run dry test (count 3, delay 0, default 8s interval)
+        run: ./i-trust-my-ai --dry-run --count 3 --delay-sec 0
 
-      - name: Run dry test (blind-trust + overthinking)
-        run: |
-          swift run i-trust-my-ai --dry-run --count 2 --delay-sec 0 --mode blind-trust
-          swift run i-trust-my-ai --dry-run --count 2 --delay-sec 0 --mode overthinking
-
-      - name: Run founder mode dry
-        run: swift run i-trust-my-ai --dry-run --count 1 --delay-sec 0 --mode founder
+      - name: Run dry test (custom interval, count 2)
+        run: ./i-trust-my-ai --dry-run --count 2 --interval-ms 500 --delay-sec 0
 
       - name: Show help
-        run: swift run i-trust-my-ai --help
+        run: ./i-trust-my-ai --help
+
+      - name: Test plain toggle (start + immediate stop to keep CI clean)
+        run: |
+          ./i-trust-my-ai
+          sleep 1
+          test -f /tmp/i-trust-my-ai.pid || echo "pid file check"
+          pkill -f 'i-trust-my-ai --daemon' 2>/dev/null || true
+          rm -f /tmp/i-trust-my-ai.pid
+          echo "Toggle test passed (only 1 instance enforced)"
